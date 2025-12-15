@@ -219,5 +219,50 @@ def validate_workflow(workflow_id):
         return jsonify({"error": str(e)}), 500
 
 
+@app.route('/api/llm/status', methods=['GET'])
+def llm_status():
+    """Get LLM initialization status."""
+    try:
+        from src.core.llm import get_llm_manager
+        from config.settings import get_settings
+        
+        settings = get_settings()
+        llm_manager = get_llm_manager()
+        
+        return jsonify({
+            "api_key_configured": settings.is_groq_configured,
+            "llm_initialized": llm_manager.is_initialized,
+            "model_name": settings.llm_model_name,
+            "temperature": settings.llm_temperature
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Error getting LLM status: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/llm/initialize', methods=['POST'])
+def initialize_llm():
+    """Initialize the LLM."""
+    try:
+        from src.core.llm import get_llm_manager
+        
+        llm_manager = get_llm_manager()
+        
+        if llm_manager.is_initialized:
+            return jsonify({"message": "LLM already initialized"}), 200
+        
+        success = llm_manager.initialize()
+        
+        if success:
+            return jsonify({"message": "LLM initialized successfully"}), 200
+        else:
+            return jsonify({"error": "Failed to initialize LLM"}), 500
+            
+    except Exception as e:
+        logger.error(f"Error initializing LLM: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

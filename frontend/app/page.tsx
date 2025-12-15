@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import WorkflowList from "@/components/WorkflowList";
 import WorkflowBuilder from "@/components/WorkflowBuilder";
 import WorkflowExecutor from "@/components/WorkflowExecutor";
+import LLMStatusCard from "@/components/LLMStatus";
 
 export function HomePage() {
   const [view, setView] = useState<"list" | "builder" | "executor">("list");
@@ -11,6 +12,7 @@ export function HomePage() {
 
   return (
     <div className="min-h-screen bg-black">
+
       <nav className="glass-strong sticky top-0 z-50 shadow-lg shadow-white/5">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
@@ -59,7 +61,8 @@ export function HomePage() {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+        <LLMStatusCard />
         {view === "list" && (
           <WorkflowList
             onEdit={(id) => {
